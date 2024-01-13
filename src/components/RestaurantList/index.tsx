@@ -1,13 +1,13 @@
-import Restaurant from '../../models/Restaurant'
+import { Restaurante } from '../../pages/Home'
 import RestaurantCard from '../RestaurantCard'
 import { Lista } from './styles'
 
 type Props = {
-  restaurantes: Restaurant[]
+  restaurantes: Restaurante[]
 }
 
 const RestaurantList = ({ restaurantes }: Props) => {
-  const getTagRestaurante = (restaurante: Restaurant) => {
+  const getTagRestaurante = (restaurante: Restaurante) => {
     const tags = []
     if (restaurante.destacado) {
       tags.push('Destaque da semana')
@@ -28,6 +28,7 @@ const RestaurantList = ({ restaurantes }: Props) => {
               descricao={restaurante.descricao}
               avaliacao={restaurante.avaliacao}
               capa={restaurante.capa}
+              tipo={restaurante.tipo}
               infos={getTagRestaurante(restaurante)}
             />
           </li>
