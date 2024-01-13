@@ -1,7 +1,10 @@
 import vector from '../../assets/images/Vector.svg'
+import { open } from '../../store/reducers/cart'
 import logo from '../../assets/images/logo.svg'
-import { HeaderBar, Logo } from './styles'
+import { HeaderBar, Logo, CartButton } from './styles'
 import { Link } from 'react-router-dom'
+import { useDispatch, useSelector } from 'react-redux'
+import { RootReducer } from '../../store'
 
 const Header = () => (
   <HeaderBar style={{ backgroundImage: `url(${vector})` }}>

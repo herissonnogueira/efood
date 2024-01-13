@@ -21,4 +21,5 @@ export const ButtonLink = styled(Link)`
   font-weight: 700;
   border: none;
   text-decoration: none;
+  cursor: pointer;
 `

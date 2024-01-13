@@ -12,10 +12,13 @@ import {
 } from './styles'
 import fechar from '../../assets/images/fechar.svg'
 import { useState } from 'react'
-import { CardapioItem } from '../../pages/Home'
+import { CardapioItem, Restaurante } from '../../pages/Home'
+import { useDispatch } from 'react-redux'
+import { add, open } from '../../store/reducers/cart'
 
 type Props = {
   items: CardapioItem[]
+  restaurante?: Restaurante
 }
 
 interface modalState extends CardapioItem {
@@ -29,6 +32,13 @@ export const formatPrice = (preco = 0) => {
   }).format(preco)
 }
 const MenuCard = ({ items }: Props) => {
+  const dispatch = useDispatch()
+  const addToCart = () => {
+    dispatch(add(modal!))
+    dispatch(open())
+    CloseModal()
+  }
+
   const getDescription = (description: string) => {
     if (description.length > 160) {
       return description.slice(0, 157) + '...'
@@ -107,6 +117,7 @@ const MenuCard = ({ items }: Props) => {
               type="button"
               title="Clique aqui para adicionar este item ao carrinho"
               size="small"
+              onClick={addToCart}
             >
               <>Adicionar ao carrinho - {formatPrice(modal.preco)}</>
             </Button>

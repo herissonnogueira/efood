@@ -1,5 +1,5 @@
 import styled from 'styled-components'
-import { colors } from '../../styles'
+import { breakpoints, colors } from '../../styles'
 
 export const Image = styled.div`
   height: 280px;
@@ -41,5 +41,15 @@ export const Image = styled.div`
     font-weight: 900;
     color: ${colors.white};
     z-index: 1;
+  }
+
+  @media (max-width: ${breakpoints.desktop}) {
+    p {
+      font-size: 24px;
+    }
+
+    h2 {
+      font-size: 24px;
+    }
   }
 `
