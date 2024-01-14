@@ -1,5 +1,10 @@
 import styled from 'styled-components'
 import { colors } from '../../styles'
+import { ButtonContainer } from '../Button/styles'
+
+type InputGroupProps = {
+  maxWidth?: string
+}
 
 export const Overlay = styled.div`
   position: absolute;
@@ -71,4 +76,77 @@ export const Lixeira = styled.img`
   right: 8px;
   position: absolute;
   cursor: pointer;
+`
+
+export const Form = styled.form`
+  ${ButtonContainer} {
+    margin-top: 8px;
+  }
+  .delivery-form {
+    margin-bottom: 16px;
+  }
+`
+
+export const DeliveryText = styled.h4`
+  font-size: 16px;
+  font-weight: bold;
+  color: ${colors.peach};
+  margin-bottom: 16px;
+`
+export const InputGroup = styled.div<InputGroupProps>`
+  flex: auto;
+  max-width: ${(props) => props.maxWidth || 'auto'};
+
+  label {
+    font-size: 14px;
+    font-weight: bold;
+    color: ${colors.peach};
+    display: block;
+    margin: 8px 0 8px 0;
+  }
+
+  input {
+    width: 100%;
+    background-color: ${colors.peach};
+    height: 32px;
+    border: 1px solid ${colors.peach};
+  }
+`
+export const CepContainer = styled.div`
+  display: flex;
+  justify-content: space-between;
+
+  input {
+    max-width: 155px;
+  }
+`
+
+export const CardContainer = styled.div`
+  display: flex;
+  gap: 32px;
+`
+
+export const ExpirationCard = styled.div`
+  display: flex;
+  gap: 34px;
+  margin-bottom: 24px;
+
+  input {
+    max-width: 155px;
+  }
+`
+export const ConclusionOrder = styled.div`
+  color: ${colors.peach};
+
+  h4 {
+    font-size: 16px;
+    font-weight: bold;
+    margin-bottom: 16px;
+  }
+
+  p {
+    font-size: 14px;
+    line-height: 22px;
+    margin-bottom: 16px;
+  }
 `
