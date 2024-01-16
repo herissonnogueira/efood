@@ -14,6 +14,11 @@ export const HeaderBar = styled.header`
   .container {
     display: flex;
     justify-content: space-between;
+
+    a {
+      text-decoration: none;
+      color: ${colors.orange};
+    }
   }
 
   span {
@@ -21,11 +26,28 @@ export const HeaderBar = styled.header`
   }
 
   @media (max-width: ${breakpoints.tablet}) {
-    display: none;
+    display: flex;
+  }
+
+  @media (max-width: ${breakpoints.phone}) {
+    display: flex;
+    height: 90px;
+    padding-left: 32px;
+
+    p {
+      display: none;
+    }
   }
 `
+
 export const Logo = styled.div`
   position: absolute;
+
+  @media (max-width: ${breakpoints.phone}) {
+    position: relative;
+    margin-right: 48px;
+    padding: 32px 0;
+  }
 `
 
 export const CartButton = styled.a`

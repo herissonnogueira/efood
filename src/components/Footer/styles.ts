@@ -3,7 +3,7 @@ import { colors } from '../../styles'
 
 export const FooterSection = styled.div`
   height: 298px;
-  background-color: ${colors.peach};
+  background-color: ${colors.lightPeach};
   display: flex;
   text-align: center;
   justify-content: center;

@@ -1,33 +1,21 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { useFormik } from 'formik'
 import * as Yup from 'yup'
+import InputMask from 'react-input-mask'
 
 import lixeira from '../../assets/images/lixeira.png'
 
-import {
-  CardContainer,
-  CartContainer,
-  CartItem,
-  CepContainer,
-  ConclusionOrder,
-  DeliveryText,
-  ExpirationCard,
-  Form,
-  InputGroup,
-  Lixeira,
-  Overlay,
-  Price,
-  SideBar
-} from './styles'
+import * as S from './styles'
 import { RootReducer } from '../../store'
-import { close, remove } from '../../store/reducers/cart'
+import { close, remove, clear } from '../../store/reducers/cart'
 
 import Button from '../Button'
 import { usePurchaseMutation } from '../../services/api'
 
 const Cart = () => {
-  const [purchase, { isLoading, isError, data }] = usePurchaseMutation()
+  const [purchase, { isLoading, data, isSuccess }] = usePurchaseMutation()
+
   const form = useFormik({
     initialValues: {
       fullName: '',
@@ -42,58 +30,72 @@ const Cart = () => {
       expiresYear: '',
       cardCode: ''
     },
-    // validationSchema: Yup.object({
-    //   fullName: Yup.string()
-    //     .min(5, 'O nome precisa ter pelo menos 5 caracteres')
-    //     .required('Campo obrigatório'),
-    //   deliveryAdress: Yup.string().required('Campo obrigatório'),
-    //   deliveryCity: Yup.string().required('Campo obrigatório'),
-    //   zipCode: Yup.string()
-    //     .min(8, 'O cep precisa ter 8 digitos')
-    //     .required('Campo obrigatório'),
-    //   numberAdress: Yup.number().required('Campo obrigatório'),
-    //   complementAdress: Yup.string(),
-    //   cardDisplayName: Yup.string()
-    //     .min(5, 'O nome precisa ter no minimo 5 letras.')
-    //     .required('Campo Obrigatório.'),
-    //   cardNumber: Yup.string()
-    //     .min(19, 'Numero de cartão invalido.')
-    //     .max(19, 'Numero de cartão invalido.')
-    //     .required('Campo Obrigatório.'),
-    //   cardCode: Yup.string()
-    //     .min(3, 'Código do cartão invalido.')
-    //     .max(3, 'Código do cartão invalido.')
-    //     .required('Campo Obrigatório.'),
-    //   expiresMonth: Yup.number()
-    //     .min(2, 'Mês inválido.')
-    //     .required('Campo Obrigatório.'),
-    //   expiresYear: Yup.number()
-    //     .min(4, 'Ano inválido')
-    //     .required('Campo Obrigatório.')
-    // }),
+    validationSchema: Yup.object({
+      fullName: Yup.string()
+        .min(5, 'O nome precisa ter pelo menos 5 caracteres')
+        .required('Campo obrigatório'),
+      deliveryAdress: Yup.string().required('Campo obrigatório'),
+      deliveryCity: Yup.string().required('Campo obrigatório'),
+      zipCode: Yup.string()
+        .min(8, 'O cep precisa ter 8 digitos')
+        .required('Campo obrigatório'),
+      numberAdress: Yup.number().required('Campo obrigatório'),
+      complementAdress: Yup.string(),
+      cardDisplayName: Yup.string()
+        .min(5, 'O nome precisa ter no minimo 5 letras.')
+        .required('Campo Obrigatório.'),
+      cardNumber: Yup.string()
+        .min(19, 'Numero de cartão invalido.')
+        .max(19, 'Numero de cartão invalido.')
+        .required('Campo Obrigatório.'),
+      cardCode: Yup.string()
+        .min(3, 'Código do cartão invalido.')
+        .max(3, 'Código do cartão invalido.')
+        .required('Campo Obrigatório.'),
+      expiresMonth: Yup.number()
+        .min(2, 'Mês inválido.')
+        .required('Campo Obrigatório.'),
+      expiresYear: Yup.number()
+        .min(4, 'Ano inválido')
+        .required('Campo Obrigatório.')
+    }),
     onSubmit: (values) => {
-      console.log(values)
+      purchase({
+        products: items.map((item) => ({
+          id: item.id,
+          price: item.preco
+        })),
+        delivery: {
+          receiver: values.fullName,
+          adress: {
+            description: values.deliveryAdress,
+            city: values.deliveryCity,
+            zipCode: values.zipCode,
+            number: Number(values.numberAdress),
+            complement: values.complementAdress
+          }
+        },
+        payment: {
+          card: {
+            name: values.cardDisplayName,
+            number: values.cardNumber,
+            code: Number(values.cardCode),
+            expires: {
+              month: Number(values.expiresMonth),
+              year: Number(values.expiresYear)
+            }
+          }
+        }
+      })
     }
   })
-  // const getErrorMessage = (fieldName: string, message?: string) => {
-  //   const isTouched = fieldName in form.touched
-  //   const isInvalid = fieldName in form.errors
+  console.log(form)
+  const checkInputHasError = (fieldName: string) => {
+    const isTouched = fieldName in form.touched
+    const isInvalid = fieldName in form.errors
+    const hasError = isTouched && isInvalid
 
-  //   if (isTouched && isInvalid) return message
-  //   return ''
-  // }
-
-  const [goToDeliveryForm, setGoToDeliveryForm] = useState(false)
-
-  const checkout = () => {
-    setGoToDeliveryForm(true)
-  }
-  const goToCart = () => {
-    setGoToDeliveryForm(false)
-  }
-  const dispatch = useDispatch()
-  const closeCart = () => {
-    dispatch(close())
+    return hasError
   }
 
   const formatPrice = (preco = 0) => {
@@ -115,44 +117,55 @@ const Cart = () => {
     dispatch(remove(id))
   }
 
+  const [errorIsVisible, setErrorIsVisible] = useState(false)
   const [payment, setPayment] = useState(false)
+  const [goToDeliveryForm, setGoToDeliveryForm] = useState(false)
 
-  const setPaymentTrue = () => {
-    setPayment(true)
+  const dispatch = useDispatch()
+  const closeCart = () => {
+    dispatch(close())
   }
+
+  useEffect(() => {
+    if (isSuccess) {
+      dispatch(clear())
+    }
+  }, [dispatch, isSuccess])
+
+  const checkout = () => {
+    setGoToDeliveryForm(true)
+  }
+  const goToCart = () => {
+    setGoToDeliveryForm(false)
+  }
+
   const submit = () => {
-    form.handleSubmit
-    setPaymentTrue()
+    if (!form.dirty && form.isValid) {
+      setErrorIsVisible(true)
+    } else {
+      setPayment(true)
+    }
   }
-
-  const [showConclusion, setShowConclusion] = useState(false)
-  const finished = () => {
-    setShowConclusion(true)
-    form.handleSubmit
-  }
-
   const backToDeliveryForm = () => {
     setGoToDeliveryForm(true)
     setPayment(false)
-    setShowConclusion(false)
   }
-
   const finalized = () => {
     closeCart()
     setGoToDeliveryForm(false)
-    setShowConclusion(false)
     setPayment(false)
   }
+  const total = items.reduce((total, prato) => total + prato.preco, 0)
 
   return (
-    <CartContainer className={isOpen ? 'is-open' : ''}>
-      <Overlay onClick={closeCart} />
-      <SideBar>
+    <S.CartContainer className={isOpen ? 'is-open' : ''}>
+      <S.Overlay onClick={closeCart} />
+      <S.SideBar>
         {payment ? (
           <>
-            {showConclusion ? (
-              <ConclusionOrder>
-                <h4>Pedido realizado - Order_id</h4>
+            {isSuccess && data ? (
+              <S.ConclusionOrder>
+                <h4>Pedido realizado - {data.orderId}</h4>
                 <p>
                   Estamos felizes em informar que seu pedido já está em processo
                   de preparação e, em breve, será entregue no endereço
@@ -179,11 +192,13 @@ const Cart = () => {
                 >
                   Concluir
                 </Button>
-              </ConclusionOrder>
+              </S.ConclusionOrder>
             ) : (
-              <Form onSubmit={form.handleSubmit}>
-                <DeliveryText>Pagamento - Valor a pagar R$ 190,90</DeliveryText>
-                <InputGroup>
+              <S.Form onSubmit={form.handleSubmit}>
+                <S.DeliveryText>
+                  Pagamento - Valor a pagar {formatPrice(total)}
+                </S.DeliveryText>
+                <S.InputGroup>
                   <label htmlFor="cardDisplayName">Nome no cartão</label>
                   <input
                     id="cardDisplayName"
@@ -192,85 +207,80 @@ const Cart = () => {
                     onChange={form.handleChange}
                     onBlur={form.handleBlur}
                     value={form.values.cardDisplayName}
+                    className={
+                      checkInputHasError('cardDisplayName') ? 'error' : ''
+                    }
                   />
-                  <small>
-                    {/* {getErrorMessage(
-                  'cardDisplayName',
-                  form.errors.cardDisplayName
-                )} */}
-                  </small>
-                </InputGroup>
-                <CardContainer>
-                  <InputGroup maxWidth="228px">
+                </S.InputGroup>
+                <S.CardContainer>
+                  <S.InputGroup maxWidth="228px">
                     <label htmlFor="cardNumber">Número no cartão</label>
-                    <input
+                    <InputMask
+                      mask="9999 9999 9999 9999"
                       id="cardNumber"
                       type="text"
                       name="cardNumber"
                       onChange={form.handleChange}
                       onBlur={form.handleBlur}
                       value={form.values.cardNumber}
+                      className={
+                        checkInputHasError('cardNumber') ? 'error' : ''
+                      }
                     />
-                    {/* <small>
-                  {getErrorMessage('cardNumber', form.errors.cardNumber)}
-                </small> */}
-                  </InputGroup>
-                  <InputGroup maxWidth="87px">
+                  </S.InputGroup>
+                  <S.InputGroup maxWidth="87px">
                     <label htmlFor="cardCode">CVV</label>
-                    <input
+                    <InputMask
+                      mask="999"
                       id="cardCode"
                       type="text"
                       name="cardCode"
                       onChange={form.handleChange}
                       onBlur={form.handleBlur}
                       value={form.values.cardCode}
+                      className={checkInputHasError('cardCode') ? 'error' : ''}
                     />
-                    {/* <small>
-                  {getErrorMessage('cardCode', form.errors.cardCode)}
-                </small> */}
-                  </InputGroup>
-                </CardContainer>
-                <ExpirationCard>
-                  <InputGroup>
+                  </S.InputGroup>
+                </S.CardContainer>
+                <S.ExpirationCard>
+                  <S.InputGroup>
                     <label htmlFor="expiresMonth">Mês de vecimento</label>
-                    <input
+                    <InputMask
+                      mask="99"
                       id="expiresMonth"
                       type="text"
                       name="expiresMonth"
                       onChange={form.handleChange}
                       onBlur={form.handleBlur}
                       value={form.values.expiresMonth}
+                      className={
+                        checkInputHasError('expiresMonth') ? 'error' : ''
+                      }
                     />
-                    {/* <small>
-                  {getErrorMessage(
-                    'expiresMonth',
-                    form.errors.expiresMonth
-                  )}
-                </small> */}
-                  </InputGroup>
-                  <InputGroup>
+                  </S.InputGroup>
+                  <S.InputGroup>
                     <label htmlFor="expiresYear">Ano de vencimento</label>
-                    <input
+                    <InputMask
+                      mask="9999"
                       id="expiresYear"
                       type="text"
                       name="expiresYear"
                       onChange={form.handleChange}
                       onBlur={form.handleBlur}
                       value={form.values.expiresYear}
+                      className={
+                        checkInputHasError('expiresYear') ? 'error' : ''
+                      }
                     />
-                    {/* <small>
-                  {getErrorMessage('expiresYear', form.errors.expiresYear)}
-                </small> */}
-                  </InputGroup>
-                </ExpirationCard>
-                <Button
-                  size="big"
+                  </S.InputGroup>
+                </S.ExpirationCard>
+                <S.CustomButton
                   type="submit"
-                  title="Finalizar pagamento"
-                  onClick={finished}
+                  onClick={() => form.handleSubmit}
+                  disabled={isLoading}
                 >
-                  Finalizar Pagamento
-                </Button>
+                  {isLoading ? 'Finalizando compra...' : 'Finalizar pagamento'}
+                </S.CustomButton>
                 <Button
                   size="big"
                   type="button"
@@ -279,16 +289,16 @@ const Cart = () => {
                 >
                   Voltar para a edição do endereço
                 </Button>
-              </Form>
+              </S.Form>
             )}
           </>
         ) : (
           <>
             {goToDeliveryForm ? (
-              <Form onSubmit={form.handleSubmit}>
-                <DeliveryText>Entrega</DeliveryText>
+              <S.Form onSubmit={form.handleSubmit}>
+                <S.DeliveryText>Entrega</S.DeliveryText>
                 <div className="delivery-form">
-                  <InputGroup>
+                  <S.InputGroup>
                     <label htmlFor="fullName">Quem irá receber</label>
                     <input
                       id="fullName"
@@ -297,12 +307,11 @@ const Cart = () => {
                       value={form.values.fullName}
                       onChange={form.handleChange}
                       onBlur={form.handleBlur}
+                      className={checkInputHasError('fullName') ? 'error' : ''}
                     />
-                    {/* <small>
-                      {getErrorMessage('fullName', form.errors.fullName)}
-                    </small> */}
-                  </InputGroup>
-                  <InputGroup>
+                  </S.InputGroup>
+
+                  <S.InputGroup>
                     <label htmlFor="deliveryAdress">Endereço</label>
                     <input
                       id="deliveryAdress"
@@ -311,15 +320,12 @@ const Cart = () => {
                       value={form.values.deliveryAdress}
                       onChange={form.handleChange}
                       onBlur={form.handleBlur}
+                      className={
+                        checkInputHasError('deliveryAdress') ? 'error' : ''
+                      }
                     />
-                    {/* <small>
-                      {getErrorMessage(
-                        'deliveryAdress',
-                        form.errors.deliveryAdress
-                      )}
-                    </small> */}
-                  </InputGroup>
-                  <InputGroup>
+                  </S.InputGroup>
+                  <S.InputGroup>
                     <label htmlFor="deliveryCity">Cidade</label>
                     <input
                       id="deliveryCity"
@@ -328,30 +334,26 @@ const Cart = () => {
                       value={form.values.deliveryCity}
                       onChange={form.handleChange}
                       onBlur={form.handleBlur}
+                      className={
+                        checkInputHasError('deliveryCity') ? 'error' : ''
+                      }
                     />
-                    {/* <small>
-                      {getErrorMessage(
-                        'deliveryCity',
-                        form.errors.deliveryCity
-                      )}
-                    </small> */}
-                  </InputGroup>
-                  <CepContainer>
-                    <InputGroup>
+                  </S.InputGroup>
+                  <S.ZipCodeContainer>
+                    <S.InputGroup>
                       <label htmlFor="zipCode">CEP</label>
-                      <input
+                      <InputMask
+                        mask="99999-999"
                         id="zipCode "
                         type="text"
                         name="zipCode"
                         value={form.values.zipCode}
                         onChange={form.handleChange}
                         onBlur={form.handleBlur}
+                        className={checkInputHasError('zipCode') ? 'error' : ''}
                       />
-                      {/* <small>
-                        {getErrorMessage('zipCode', form.errors.zipCode)}
-                      </small> */}
-                    </InputGroup>
-                    <InputGroup>
+                    </S.InputGroup>
+                    <S.InputGroup>
                       <label htmlFor="numberAdress">Número</label>
                       <input
                         id="numberAdress"
@@ -360,16 +362,13 @@ const Cart = () => {
                         value={form.values.numberAdress}
                         onChange={form.handleChange}
                         onBlur={form.handleBlur}
+                        className={
+                          checkInputHasError('numberAdress') ? 'error' : ''
+                        }
                       />
-                      {/* <small>
-                        {getErrorMessage(
-                          'numberAdress',
-                          form.errors.numberAdress
-                        )}
-                      </small> */}
-                    </InputGroup>
-                  </CepContainer>
-                  <InputGroup>
+                    </S.InputGroup>
+                  </S.ZipCodeContainer>
+                  <S.InputGroup>
                     <label htmlFor="complementAdress">
                       Complemento (opcional)
                     </label>
@@ -380,23 +379,27 @@ const Cart = () => {
                       value={form.values.complementAdress}
                       onChange={form.handleChange}
                       onBlur={form.handleBlur}
+                      className={
+                        checkInputHasError('complementAdress') ? 'error' : ''
+                      }
                     />
-                    {/* <small>
-                      {getErrorMessage(
-                        'complementAdress',
-                        form.errors.complementAdress
-                      )}
-                    </small> */}
-                  </InputGroup>
+                  </S.InputGroup>
                 </div>
                 <Button
                   size="big"
-                  type="submit"
+                  type="button"
                   title="Continuar para pagamento"
-                  onClick={submit}
+                  onClick={() => submit()}
                 >
-                  Continuar com o pagamento
+                  Finalizar a compra
                 </Button>
+                {errorIsVisible ? (
+                  <p className="error-message">
+                    Preencha os campos acima para continuar
+                  </p>
+                ) : (
+                  ''
+                )}
                 <Button
                   size="big"
                   type="button"
@@ -405,42 +408,52 @@ const Cart = () => {
                 >
                   Voltar para o carrinho
                 </Button>
-              </Form>
+              </S.Form>
             ) : (
-              <div>
-                <ul>
-                  {items &&
-                    items.map((item) => (
-                      <CartItem key={item.id}>
-                        <img src={item.foto} />
-                        <div>
-                          <h3>{item.nome}</h3>
-                          <p>{formatPrice(item.preco)}</p>
-                          <Lixeira
-                            onClick={() => removeItem(item.id)}
-                            src={lixeira}
-                          />
-                        </div>
-                      </CartItem>
-                    ))}
-                </ul>
-                <Price>
-                  Valor total <span>{formatPrice(getTotalPrice())}</span>
-                </Price>
-                <Button
-                  type="button"
-                  title={'Clique aqui para continuar'}
-                  size="big"
-                  onClick={checkout}
-                >
-                  Continuar com a entrega
-                </Button>
-              </div>
+              <>
+                {items.length > 0 ? (
+                  <div>
+                    <ul>
+                      {items &&
+                        items.map((item) => (
+                          <S.CartItem key={item.id}>
+                            <img src={item.foto} />
+                            <div>
+                              <h3>{item.nome}</h3>
+                              <p>{formatPrice(item.preco)}</p>
+                              <S.Dumpster
+                                onClick={() => removeItem(item.id)}
+                                src={lixeira}
+                              />
+                            </div>
+                          </S.CartItem>
+                        ))}
+                    </ul>
+                    <S.Price>
+                      Valor total <span>{formatPrice(getTotalPrice())}</span>
+                    </S.Price>
+                    <Button
+                      type="button"
+                      title={'Clique aqui para continuar'}
+                      size="big"
+                      onClick={checkout}
+                    >
+                      Continuar com a entrega
+                    </Button>
+                  </div>
+                ) : (
+                  <p className="empty-text">
+                    O carrinho está vazio, adicione pelo menos um produto para
+                    continuar com a compra
+                  </p>
+                )}
+              </>
             )}
           </>
         )}
-      </SideBar>
-    </CartContainer>
+      </S.SideBar>
+    </S.CartContainer>
   )
 }
+
 export default Cart

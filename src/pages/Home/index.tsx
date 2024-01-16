@@ -1,39 +1,20 @@
 import Banner from '../../components/Banner'
+import Loader from '../../components/Loader'
 import RestaurantList from '../../components/RestaurantList'
+
 import { useGetRestauranteQuery } from '../../services/api'
 
-export interface CardapioItem {
-  id: number
-  foto: string
-  preco: number
-  nome: string
-  descricao: string
-  porcao: string
-}
-
-export type Restaurante = {
-  id: number
-  titulo: string
-  destacado?: boolean
-  tipo: string
-  capa: string
-  avaliacao: number
-  descricao: string
-  cardapio: CardapioItem[]
-}
-
 const Home = () => {
-  const { data: restaurante } = useGetRestauranteQuery()
-
+  const { data: restaurante, isLoading } = useGetRestauranteQuery()
   if (restaurante) {
     return (
       <>
         <Banner />
-        <RestaurantList restaurantes={restaurante} />
+        <RestaurantList isLoading={isLoading} restaurantes={restaurante} />
       </>
     )
   }
-  return <h4>Carregando...</h4>
+  return <Loader />
 }
 
 export default Home

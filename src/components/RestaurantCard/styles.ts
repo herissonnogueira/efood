@@ -33,6 +33,14 @@ export const Card = styled(Link)`
   @media (max-width: ${breakpoints.desktop}) {
     max-width: 100%;
   }
+
+  @media (max-width: ${breakpoints.tablet}) {
+    height: 420px;
+  }
+
+  @media (max-width: ${breakpoints.phone}) {
+    height: 100%;
+  }
 `
 
 export const CardTitle = styled.div`
@@ -42,6 +50,7 @@ export const CardTitle = styled.div`
   justify-content: space-between;
   padding-bottom: 16px;
 `
+
 export const Avaliation = styled.div`
   display: flex;
 
@@ -55,6 +64,7 @@ export const Avaliation = styled.div`
     width: 100%;
   }
 `
+
 export const DescriptionCard = styled.p`
   font-size: 14px;
   font-weight: 400;
@@ -73,16 +83,11 @@ export const DescriptionCard = styled.p`
     bottom: 8px;
   }
 
-  @media (max-width: ${breakpoints.tablet}) {
-    height: 240px;
-    ${ButtonLink} {
-      padding: 4px 8px;
-      position: absolute;
-      left: 8px;
-      bottom: -30px;
-    }
+  @media (max-width: ${breakpoints.phone}) {
+    height: 265px;
   }
 `
+
 export const Infos = styled.div`
   position: absolute;
   top: 16px;

@@ -2,19 +2,20 @@ import styled from 'styled-components'
 import { breakpoints, colors } from '../../styles'
 import { ButtonContainer } from '../Button/styles'
 
-export const CardapioContainer = styled.ul`
+export const MenuContainer = styled.ul`
   display: grid;
   grid-template-columns: 1fr 1fr 1fr;
   column-gap: 32px;
   row-gap: 32px;
 
-  @media (max-width: ${breakpoints.desktop}) {
+  @media (max-width: ${breakpoints.tablet}) {
     grid-template-columns: 1fr 1fr;
     justify-content: center;
     column-gap: 8px;
     row-gap: 8px;
   }
-  @media (max-width: ${breakpoints.tablet}) {
+
+  @media (max-width: ${breakpoints.phone}) {
     grid-template-columns: 1fr;
     row-gap: 16px;
   }
@@ -39,22 +40,32 @@ export const Card = styled.div`
     background-color: ${colors.lightPeach};
   }
 
-  @media (max-width: ${breakpoints.desktop}) {
-    width: 100%;
-  }
-  @media (max-width: ${breakpoints.phone}) {
+  @media (max-width: ${breakpoints.tablet}) {
     width: 80%;
     margin: 0 auto;
+    height: 100%;
+
+    img {
+      max-width: 100%;
+    }
+  }
+
+  @media (max-width: ${breakpoints.phone}) {
+    img {
+      width: 100%;
+    }
   }
 `
-export const Nome = styled.h3`
+
+export const Name = styled.h3`
   font-size: 16px;
   font-weight: 900;
   margin-bottom: 8px;
   color: ${colors.lightPeach};
   line-height: 18.75px;
 `
-export const Descricao = styled.p`
+
+export const Description = styled.p`
   font-size: 14px;
   font-weight: 400;
   line-height: 22px;
@@ -85,7 +96,8 @@ export const Modal = styled.div`
     background-color: rgba(0, 0, 0, 0.8);
   }
 `
-export const NomePrato = styled.h3`
+
+export const PlateName = styled.h3`
   font-size: 16px;
   font-weight: 900;
   margin-bottom: 8px;
@@ -116,16 +128,25 @@ export const ModalContent = styled.div`
   }
 
   @media (max-width: ${breakpoints.tablet}) {
-    display: block;
-    height: 80%;
-    max-width: 344px;
+    display: flex;
+    max-width: 100%;
     padding: 32px;
+
     ${ButtonContainer} {
       max-width: 100%;
     }
+
+    @media (max-width: ${breakpoints.phone}) {
+      display: block;
+      max-width: 80%;
+      height: 80%;
+      padding: 48px;
+      overflow: auto;
+    }
   }
 `
-export const Foto = styled.img`
+
+export const Picture = styled.img`
   height: 280px;
   width: 280px;
   object-fit: cover;
@@ -135,9 +156,13 @@ export const Foto = styled.img`
     padding-bottom: 16px;
     object-fit: cover;
   }
+  @media (max-width: ${breakpoints.phone}) {
+    object-fit: cover;
+    width: 100%;
+  }
 `
 
-export const Fechar = styled.img`
+export const Close = styled.img`
   width: 16px;
   height: 16px;
   right: 8px;

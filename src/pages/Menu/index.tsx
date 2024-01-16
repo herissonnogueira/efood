@@ -1,16 +1,23 @@
 import { useParams } from 'react-router-dom'
+
 import Header from '../../components/Header'
 import Hero from '../../components/Hero'
-import MenuCard from '../../components/MenuList'
-import { useGetCardapioQuery } from '../../services/api'
+import MenuList from '../../components/MenuList'
+import Loader from '../../components/Loader'
 import Cart from '../../components/Cart'
 
+import { useGetMenuQuery } from '../../services/api'
+
+type MenuParams = {
+  id: string
+}
+
 const Menu = () => {
-  const { id } = useParams()
-  const { data: menu } = useGetCardapioQuery(id!)
+  const { id } = useParams() as MenuParams
+  const { data: menu } = useGetMenuQuery(id)
 
   if (!menu) {
-    return <h4>Carregando</h4>
+    return <Loader />
   }
 
   return (
@@ -18,7 +25,7 @@ const Menu = () => {
       <Header />
       <Hero />
       <Cart />
-      <MenuCard items={menu.cardapio} />
+      <MenuList items={menu.cardapio} />
     </>
   )
 }

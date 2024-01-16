@@ -1,7 +1,8 @@
-import { Avaliation, Card, CardTitle, DescriptionCard, Infos } from './styles'
 import estrela from '../../assets/images/estrela.png'
 import Tag from '../Tag/index'
 import Button from '../Button'
+
+import * as S from './styles'
 
 type Props = {
   titulo: string
@@ -24,21 +25,24 @@ const RestaurantCard = ({
   return (
     <>
       <div className="container">
-        <Card to={`/cardapio/${id}`}>
+        <S.Card
+          title="Clique aqui para ver os itens do menu"
+          to={`/cardapio/${id}`}
+        >
           <img src={capa} />
-          <Infos>
+          <S.Infos>
             {infos.map((info) => (
               <Tag key={info}>{info}</Tag>
             ))}
-          </Infos>
-          <DescriptionCard>
-            <CardTitle>
+          </S.Infos>
+          <S.DescriptionCard>
+            <S.CardTitle>
               <p>{titulo}</p>
-              <Avaliation>
+              <S.Avaliation>
                 <p>{avaliacao}</p>
                 <img src={estrela} alt="Estrela" />
-              </Avaliation>
-            </CardTitle>
+              </S.Avaliation>
+            </S.CardTitle>
             {descricao}
             <Button
               type="link"
@@ -47,8 +51,8 @@ const RestaurantCard = ({
             >
               Saiba mais
             </Button>
-          </DescriptionCard>
-        </Card>
+          </S.DescriptionCard>
+        </S.Card>
       </div>
     </>
   )

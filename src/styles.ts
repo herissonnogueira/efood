@@ -10,7 +10,7 @@ export const colors = {
 export const breakpoints = {
   desktop: '1024px',
   tablet: '768px',
-  phone: '495px'
+  phone: '480px'
 }
 
 export const GlobalCss = createGlobalStyle`
@@ -20,26 +20,26 @@ export const GlobalCss = createGlobalStyle`
     box-sizing: border-box;
     font-family: Roboto, sans-serif;
     list-style: none;
+
+    body {
+      background-color: ${colors.peach};
+      color: ${colors.orange};
   }
 
-  body {
-    background-color: ${colors.lightPeach};
-    color: ${colors.orange};
-  }
+    .container {
+      max-width: 1024px;
+      width: 100%;
+      margin: 0 auto;
 
-  .container {
-    max-width: 1024px;
-    width: 100%;
-    margin: 0 auto;
+      @media (max-width: ${breakpoints.desktop}) {
+        max-width: 80%;
+        justify-content: center;
+      }
 
-    @media (max-width: ${breakpoints.desktop}) {
-      max-width: 80%;
-      justify-content: center;
-    }
-
-    @media (max-width: ${breakpoints.phone}) {
-      max-width: 90%;
-      justify-content: center;
+      @media (max-width: ${breakpoints.phone}) {
+        max-width: 90%;
+        justify-content: center;
+      }
     }
   }
 `
@@ -55,5 +55,5 @@ export const Container = styled.div`
   margin: 0 auto;
   padding-top: 80px;
   padding-bottom: 120px;
-  background-color: ${colors.lightPeach};
+  background-color: ${colors.peach};
 `
